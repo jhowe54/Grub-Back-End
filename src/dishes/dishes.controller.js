@@ -55,7 +55,6 @@ function read(req, res, next) {
 //update an already existing dish
 function update(req, res, next) {
   const dish = res.locals.dish
-  const originalDish = dish.data
   const { data: { id, name, description, price, image_url } = {} } = req.body;
   
 /*
@@ -71,7 +70,7 @@ dishId path parameter
   }
 
   const updatedDish = {
-    ...originalDish,
+    ...dish,
     id: dish.id,
     name: name,
     description: description,
