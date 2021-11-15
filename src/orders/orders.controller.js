@@ -96,7 +96,7 @@ function update(req, res, next) {
       status: status,
     };
     const index = orders.findIndex((order) => order.id === originalOrder.id);
-     if(index > -1 && originalOrder.status !== "delivered") {
+     if(index > -1) {
       orders.splice(index, 1, updatedOrder)
     }
     res.json({ data: updatedOrder });
