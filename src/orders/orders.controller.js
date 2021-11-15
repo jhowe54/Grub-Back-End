@@ -76,26 +76,29 @@ function read(req, res) {
 
 //updates an existing order
 function update(req, res, next) {
-    const { data: { id, deliverTo, mobileNumber, dishes, status } = {} } = req.body;
-    const orderId = res.locals.order.id;
-    const foundOrder = orders.find((order) => order.id === orderId);
+  const originalOrder = res.locals.order
+  const { data: { id, deliverTo, mobileNumber, dishes, status } = {} } = req.body;
+
 //if the body of the request contains an id property, the id must match the orderId parameter
-    if (id && id !== orderId) {
+    if (id && id !== originalOrder.id) {
       return next({
         status: 400,
-        message: `The inputted order id : ${req.body.data.id} - does not match the order you are trying to update - order id: ${foundOrder.id}`,
+        message: `The inputted order id : ${req.body.data.id} - does not match the order you are trying to update - order id: ${originalOrder.id}`,
       });
     }
   
     const updatedOrder = {
-      ...foundOrder,
-      id: res.locals.order.id,
+      ...originalOrder,
+      id: originalOrder.id,
       deliverTo: deliverTo,
       mobileNumber: mobileNumber,
       dishes: dishes,
       status: status,
     };
-  
+    const index = orders.findIndex((order) => order.id === originalOrder.id);
+     if(index > -1 && originalOrder.status !== "delivered") {
+      orders.splice(index, 1, updatedOrder)
+    }
     res.json({ data: updatedOrder });
 }
 

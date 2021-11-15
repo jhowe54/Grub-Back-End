@@ -54,7 +54,7 @@ function read(req, res, next) {
 }
 //update an already existing dish
 function update(req, res, next) {
-  const dish = res.locals.dish
+  const originalDish = res.locals.dish
   const { data: { id, name, description, price, image_url } = {} } = req.body;
   
 /*
@@ -62,22 +62,26 @@ if there is a dish id in the request body and it does not match the dishId path 
 this executes only if there is a dishId in the body so that if the id is not specified, the function can still update the dish based on the 
 dishId path parameter
 */
-  if (id && id !== dish.id) {
+  if (id && id !== originalDish.id) {
     return next({
       status: 400,
-      message: `The inputted dish id : ${req.body.data.id} - does not match the dish you are trying to update - dish id: ${dish.id}`,
+      message: `The inputted dish id : ${req.body.data.id} - does not match the dish you are trying to update - dish id: ${originalDish.id}`,
     });
   }
-
+  console.log(req.body)
   const updatedDish = {
-    ...dish,
-    id: dish.id,
+    ...originalDish,
+    id: originalDish.id,
     name: name,
     description: description,
     price: price,
     image_url: image_url,
   };
+  console.log(updatedDish)
+  const index = dishes.findIndex((dish) => dish.id === originalDish.id);
   
+  dishes.splice(index, 1, updatedDish);
+
   res.json({ data: updatedDish });
 }
 //list all dishes
